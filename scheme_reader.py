@@ -158,11 +158,12 @@ def read_tail(src):
             raise SyntaxError('unexpected end of file')
         elif src.current() == ')':
             # BEGIN PROBLEM 1
+            src.pop_first()
             return nil
             # END PROBLEM 1
         else:
             # BEGIN PROBLEM 1
-            "*** YOUR CODE HERE ***"
+            return Pair(scheme_read(src), read_tail(src))
             # END PROBLEM 1
     except EOFError:
         raise SyntaxError('unexpected end of file')
