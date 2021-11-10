@@ -71,7 +71,14 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 7
-    return scheme_eval(expressions.first, env) # replace this with lines of your own code
+    if expressions == nil:
+        return None
+    elif expressions.rest == nil:
+        returned_val = scheme_eval(expressions.first, env)
+        return returned_val
+    else:
+        scheme_eval(expressions.first, env)
+        return eval_all(expressions.rest, env)
     # END PROBLEM 7
 
 ################
@@ -268,7 +275,7 @@ def do_quote_form(expressions, env):
     """
     validate_form(expressions, 1, 1)
     # BEGIN PROBLEM 6
-    "*** YOUR CODE HERE ***"
+    return expressions.first
     # END PROBLEM 6
 
 def do_begin_form(expressions, env):
