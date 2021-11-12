@@ -13,7 +13,13 @@
 ;; Returns a list of two-element lists
 (define (enumerate s)
   ; BEGIN PROBLEM 15
-  'replace-this-line
+  (define (enumerate-from i s)
+    (cond
+      ((equal? s nil) '())
+      (else (cons (list i (car s)) (enumerate-from (+ 1 i) (cdr s))))
+      )
+    )
+  (enumerate-from 0 s)
   )
   ; END PROBLEM 15
 
@@ -23,7 +29,16 @@
 ;; the merged lists.
 (define (merge comp list1 list2)
   ; BEGIN PROBLEM 16
-  'replace-this-line
+  (cond
+    ((equal? list1 nil) list2)
+    ((equal? list2 nil) list1)
+    ((= (car list1) (car list2))
+      (cons (car list1) (merge comp (cdr list1) list2)))
+    ((comp (car list1) (car list2))
+      (cons (car list1) (merge comp (cdr list1) list2)))
+    (else (cons (car list2) (merge comp list1 (cdr list2))))
+
+    )
   )
   ; END PROBLEM 16
 
@@ -37,8 +52,11 @@
 
 (define (nondecreaselist s)
     ; BEGIN PROBLEM 17
-    'replace-this-line
+  (cond
+    ((< (car s) (car (cdr s))))
+
     )
+  )
     ; END PROBLEM 17
 
 ;; Problem EC

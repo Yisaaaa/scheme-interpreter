@@ -130,7 +130,15 @@ class Frame(object):
         if len(formals) != len(vals):
             raise SchemeError('Incorrect number of arguments to function call')
         # BEGIN PROBLEM 10
-        "*** YOUR CODE HERE ***"
+        def bind_childframe(frame, formals, vals):
+            if formals == nil:
+                return
+            else:
+                frame.define(formals.first, vals.first)
+                bind_childframe(frame, formals.rest, vals.rest)
+        child_frame = Frame(self)
+        bind_childframe(child_frame, formals, vals)
+        return child_frame
         # END PROBLEM 10
 
 ##############
@@ -197,7 +205,8 @@ class LambdaProcedure(Procedure):
         """Make a frame that binds my formal parameters to ARGS, a Scheme list
         of values, for a lexically-scoped call evaluated in environment ENV."""
         # BEGIN PROBLEM 11
-        "*** YOUR CODE HERE ***"
+        child_frame = self.env.make_child_frame(self.formals, args)
+        return child_frame
         # END PROBLEM 11
 
     def __str__(self):
@@ -260,7 +269,13 @@ def do_define_form(expressions, env):
         # END PROBLEM 5
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
-        "*** YOUR CODE HERE ***"
+        function_name = target.first
+        function_formals = target.rest
+        function_body = expressions.rest
+        expression = Pair(function_formals, function_body)
+        function_object = do_lambda_form(expression, env)
+        env.define(function_name, function_object)
+        return function_name
         # END PROBLEM 9
     else:
         bad_target = target.first if isinstance(target, Pair) else target
@@ -301,7 +316,8 @@ def do_lambda_form(expressions, env):
     formals = expressions.first
     validate_formals(formals)
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    lambda_procedure = LambdaProcedure(expressions.first, expressions.rest, env)
+    return lambda_procedure 
     # END PROBLEM 8
 
 def do_if_form(expressions, env):
@@ -333,7 +349,16 @@ def do_and_form(expressions, env):
     False
     """
     # BEGIN PROBLEM 12
-    "*** YOUR CODE HERE ***"
+    if expressions == nil:
+        return True
+    while expressions.rest != nil:
+        if not is_true_primitive(scheme_eval(expressions.first, env)):
+            return False
+        expressions = expressions.rest
+    expr = scheme_eval(expressions.first, env)
+    if is_true_primitive(expr):
+        return expr
+    return False
     # END PROBLEM 12
 
 def do_or_form(expressions, env):
@@ -350,7 +375,18 @@ def do_or_form(expressions, env):
     6
     """
     # BEGIN PROBLEM 12
-    "*** YOUR CODE HERE ***"
+    if expressions == nil:
+        return False
+    while expressions.rest != nil:
+        expr = scheme_eval(expressions.first, env)
+        if is_true_primitive(expr):
+            return expr
+        expressions = expressions.rest
+    expr = scheme_eval(expressions.first, env)
+    if is_true_primitive(expr):
+        return expr
+    return False
+
     # END PROBLEM 12
 
 def do_cond_form(expressions, env):
@@ -370,7 +406,11 @@ def do_cond_form(expressions, env):
             test = scheme_eval(clause.first, env)
         if is_true_primitive(test):
             # BEGIN PROBLEM 13
-            "*** YOUR CODE HERE ***"
+            if clause.rest == nil:
+                return test
+            else:
+                returned_val = eval_all(clause.rest, env)
+                return returned_val
             # END PROBLEM 13
         expressions = expressions.rest
 
@@ -394,7 +434,18 @@ def make_let_frame(bindings, env):
         raise SchemeError('bad bindings list in let form')
     names, values = nil, nil
     # BEGIN PROBLEM 14
-    "*** YOUR CODE HERE ***"
+
+    def pair_name_val(bindings, env):
+        binding = bindings.first
+        validate_form(binding.rest, 1, 1)
+        name, value = Pair(binding.first, nil), Pair(scheme_eval(binding.rest.first, env), nil)
+        if bindings.rest == nil:
+            return name, value
+        else:
+            name.rest, value.rest = pair_name_val(bindings.rest, env)
+            return name, value
+    names, values = pair_name_val(bindings, env)
+    validate_formals(names)
     # END PROBLEM 14
     return env.make_child_frame(names, values)
 
