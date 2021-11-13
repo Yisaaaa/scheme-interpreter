@@ -50,13 +50,17 @@
 
 ;; Problem 17
 
-(define (nondecreaselist s)
+(define (nonde s)
     ; BEGIN PROBLEM 17
-  (cond
-    ((< (car s) (car (cdr s))))
+    (cond
+    ((equal? s nil) (list '()))
+    ((equal? (cdr s) nil) (list s))
+    ((< (car (cdr s)) (car s))
+      (cons (list (car s)) (nonde (cdr s))))
+    (else 
+      (cons (cons (car s) (car (nonde (cdr s)))) (cdr (nonde (cdr s)))))
+    ))
 
-    )
-  )
     ; END PROBLEM 17
 
 ;; Problem EC
